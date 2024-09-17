@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href=" {% static "css/styles.css" %} ">
+    <title>RSA</title>
+    <script>
+        function enviarFormulario(accion) {
+            var texto = document.getElementById('texto').value;
+            fetch("{% url 'procesar_texto' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({'texto': texto, 'accion': accion})
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('texto_procesado').value = data.texto_procesado;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</head>
+
+<body>
+    <header>
+        <nav class="nav_bar">
+            
+        </nav>
+    </header>
+    <main>
+        <div class="content_container">
+            <div class="settings_container">
+                <div class="middle_container">
+                    <div class="prime_container">
+                        <h2>NUMEROS PRIMROS</h2>
+                        <div class="letters_container">
+                            <div class="new_letters_container">
+                                <h2>p => {{p}} </h2>
+                                <h2>q => {{q}}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="middle_container">
+                    <div class="keys_container">
+                        <h2>CLAVES</h2>
+                        <div class="letters_container">
+                            <div class="allkeys_container">
+                                <div class="private_key_container">
+                                    <h2>Privada => ({{n}},{{d}})</h2>
+                                </div>
+                                <div class="public_key_container">
+                                    <h2>Publica => ({{n}},{{e}})</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions_container">
+                    <h2>ACCIONES</h2>
+                    <div class="buttons_container">
+                        <button type="submit" onclick="enviarFormulario('encript')" >Encrypt</button>
+                        <button type="submit" onclick="enviarFormulario('decript')">Decrypt</button>
+                    </div>
+                </div>
+            </div>
+            <div class="input_container">
+                <div class="text_container">
+                    <form method="post" action="{% url 'procesar_texto' %}">
+                        {% csrf_token %}
+                        <textarea id="texto" placeholder="INPUT">{{ texto_input }}</textarea>
+                    </form>
+                </div>
+            </div>
+            <div class="output_container">
+                <div class="text_container">
+                    <textarea id="texto_procesado" placeholder="OUTPUT" readonly>{{output}}</textarea>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
